@@ -8,6 +8,7 @@ t = tree.fromstring("( (S (NP (PRP I)) (VP (VBP 'm) (NP (NP (DT a) (JJ contempor
 
 
 t1 = tree.fromstring("( S (NP (PRP I))(VP (VBP eat) (NN rice)) )")
+t2 = tree.fromstring("(S)")
 
 def traverse(t):
     try:
@@ -24,36 +25,34 @@ def traverse(t):
         print(')')	
         
 def compare_similar(t1, t2):
-	print "---------------------------"
-	res_t1 = check_label_available(t1)
-	res_t2 = check_label_available(t2)
+	empty_t1 = check_label_is_empty(t1)
+	empty_t2 = check_label_is_empty(t2)
 
-	print res_t1
-	print res_t2
+	if (empty_t1 and not empty_t2) or (not empty_t1 and empty_t2):
+		return False
 
-	if res_t1==0 and res_t2==0:
-		print "masuk base case"
-		return 1
+	if empty_t1 and empty_t2:
+		return True
 
-	if res_t1!=0 and res_t2!=0:
-		if t1.label() == t2.label() and len(t1) == len(t2):
-			for index in range(len(t1)):
-				compare_similar(t1[index], t2[index])
-		else:
-			return 0
-	return 0
+	if t1.label() != t2.label():
+		return False
 
+	same_child = True
+	for index in range(len(t1)):
+		same_child = same_child and compare_similar(t1[index], t2[index])
 
-def check_label_available(t):
+	return same_child
+
+def check_label_is_empty(t):
 	try:
 		t.label()
 	except AttributeError:
-		return(0)
+		return True
 	else:
-		return(t)
+		return False
 
 #traverse(t1)
-if compare_similar(t1,t1):
+if compare_similar(t,t):
 	print "same"
 else:
 	print "woy"
